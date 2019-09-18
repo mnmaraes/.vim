@@ -1,0 +1,98 @@
+snippet file_presentation "Presentation Snippet"
+// @flow
+import React, { PureComponent } from 'react';
+
+import g from 'glamorous-native';
+
+import { Text } from '~/components/styles';
+
+import layout from '~/config/layout';
+
+type Props = {};
+export default class ${1} extends PureComponent<Props> {
+  render() {
+    return (
+      <Container>
+	<Label>$1</Label>
+      </Container>
+    );
+  }
+}
+
+const Container = g.view({});
+
+const Label = g(Text)({});
+endsnippet
+
+snippet file_index "Index File Template"
+// @flow
+import ${1:Component} from './presentation';
+
+import enhancer from './enhancers';
+
+export default enhancer($1);
+endsnippet
+
+snippet file_enhancer "Enhancer File Template"
+// @flow
+import { compose } from 'ramda';
+
+import { withProps } from 'recompose';
+
+const withSections = withProps(() => ({ isPlaceholder: true  }));
+
+export default compose(withSections);
+endsnippet
+
+snippet file_redux "Redux File Template"
+// @flow
+import { createReducer, createActions } from 'reduxsauce';
+import Immutable from 'seamless-immutable';
+
+//=====[ Actions ]=====
+const { Types, Creators } = createActions(
+  {
+    action: ['param', 'other']
+  },
+  { prefix: '${3:PREFIX}_' }
+);
+
+export const ${1}Types = Types;
+export default Creators;
+
+//=====[ Reducers ]=====
+// 1. Type Definitions
+export type $1StateType = Immutable<{
+  count: number
+}>;
+
+// 2. Initial State
+const INITIAL_STATE: $1StateType = Immutable.from({
+  count: 0
+});
+
+// 3. Reducing functions
+const update = (state: $1StateType, { param, other }) =>
+  state.merge({
+    count: param + other
+  });
+
+// 4. Hook Actions and Reducers together
+export const ${2}Reducer = createReducer(INITIAL_STATE, {
+  [Types.ACTION]: update
+});
+
+//=====[ Selectors ]=====
+export const $2Selectors = {};
+
+//=====[ Sagas ]=====
+import { all, takeLatest } from 'redux-saga/effects';
+
+// 1. Defining Workers
+function* worker({ param, other }): Generator<any, void, any> {}
+
+// 2. Putting Sagas and Actions together
+export function* $2Sagas(): Generator<any, void, any> {
+  yield all([takeLatest(Types.ACTION, worker)]);
+}
+endsnippet
