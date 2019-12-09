@@ -23,13 +23,22 @@ set runtimepath+=~/.vim/my-snippets/
 
 set undofile
 
+set clipboard=unnamed
+
 set directory=$HOME/.vim/swp//
 set undodir=$HOME/.vim/undodir
 
 call plug#begin('~/.vim/plugged')
+  Plug 'heavenshell/vim-pydocstring'
+
+  Plug 'vim-perl/vim-perl', { 'for': 'perl', 'do': 'make clean carp dancer highlight-all-pragmas moose test-more try-tiny' }
+  Plug 'vim-airline/vim-airline'
+  let g:airline_powerline_fonts = 1
 
   Plug 'Shougo/vimproc.vim', {'do' : 'make'}
   Plug 'Quramy/tsuquyomi'
+  Plug 'leafgarland/typescript-vim'
+  Plug 'peitalin/vim-jsx-typescript'
 
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-fugitive'
@@ -41,15 +50,22 @@ call plug#begin('~/.vim/plugged')
   Plug 'plasticboy/vim-markdown'
   Plug 'chmp/mdnav'
 
+  Plug 'racer-rust/vim-racer'
+  let g:racer_experimental_completer = 1
+
   Plug 'scrooloose/nerdcommenter'
   let g:NERDCreateDefaultMappings = 0
+
+  Plug 'deoplete-plugins/deoplete-jedi'
+  Plug 'davidhalter/jedi-vim'
+  let g:jedi#completions_enabled = 0
+  let g:jedi#goto_stubs_command = ''
 
   Plug 'othree/yajs.vim'
   Plug 'mxw/vim-jsx'
   Plug 'mhartington/oceanic-next'
 
   Plug 'ervandew/supertab'
-  let g:SuperTabDefaultCompletionType = "<c-n>"
 
   Plug 'SirVer/ultisnips'
   Plug 'honza/vim-snippets'
@@ -59,24 +75,30 @@ call plug#begin('~/.vim/plugged')
   let g:UltiSnipsEditSplit="vertical"
 
   Plug 'mattn/emmet-vim'
-  let g:user_emmet_leader_key='<leader>e'
 
   Plug 'scrooloose/nerdtree'
   Plug 'Xuyuanp/nerdtree-git-plugin'
 
   Plug 'dense-analysis/ale'
   let g:ale_linters = {
-			  \'javascript': ['flow', 'eslint', 'prettier'],
-			  \'typescript': ['tsserver', 'tslint']
+			  \'javascript': ['eslint'],
+			  \'typescript': ['tsserver', 'tslint'],
+			  \'python': ['flake8', 'pylint']
 			  \}
   let g:ale_fixers = {
-			  \'javascript': ['prettier'],
-			  \'typescript': ['prettier']
+			  \'javascript': ['prettier', 'eslint'],
+			  \'typescript': ['prettier'],
+			  \'python': ['autopep8', 'isort'],
+			  \'rust': ['rustfmt']
 			  \}
+  let g:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
+  let g:ale_virtualenv_dir_names = []
   let g:ale_fix_on_save = 1
+  let g:ale_python_autopep8_options = "--max-line-length 120"
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
+  let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
   if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -107,26 +129,23 @@ endfunction
 
 nnoremap <SPACE> <Nop>
 
+" Enhanced Movement
+ nnoremap H 10h
+ nnoremap J 10j
+ nnoremap K 10k
+ nnoremap L 10l
+
 " b -> Buffer commands
-nnoremap <Leader>bl :ls<CR>
-nnoremap <Leader>bd :bd<CR>
+nnoremap <Leader>bd :b#<bar>bd#<CR>
 nnoremap <Leader>bb :bn<CR>
 nnoremap <Leader>bv :bp<CR>
-nnoremap <Leader>bg :e#<CR>
-nnoremap <Leader>b1 :1b<CR>
-nnoremap <Leader>b2 :2b<CR>
-nnoremap <Leader>b3 :3b<CR>
-nnoremap <Leader>b4 :4b<CR>
-nnoremap <Leader>b5 :5b<CR>
-nnoremap <Leader>b6 :6b<CR>
-nnoremap <Leader>b7 :7b<CR>
-nnoremap <Leader>b8 :8b<CR>
-nnoremap <Leader>b9 :9b<CR>
-nnoremap <Leader>b0 :10b<CR>
+nnoremap <Leader>bo :%bd<bar>e#<CR>
+nnoremap <Leader>ba :%bd<CR>
 
 " c -> Code/Comment commands
-map <leader>cc <plug>NERDCommenterToggle
+nmap <leader>cc <plug>NERDCommenterToggle
 nnoremap <leader>cf zfa{
+nmap <leader>ce <C-y>,
 
 " k -> Split commands
 nmap <leader>kb :NERDTreeToggle<CR>
@@ -162,3 +181,4 @@ aug toggle_relative
   au InsertEnter,WinLeave * :setlocal norelativenumber
   au InsertLeave,WinEnter * :setlocal relativenumber
 aug END
+
