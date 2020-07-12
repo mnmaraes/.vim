@@ -39,6 +39,7 @@ syntax on
 let mapleader=" "
 let g:markdown_folding = 1
 set runtimepath+=~/.vim/my-snippets/
+set runtimepath^=/Users/murillo/Projects/Personal/central-interfaces/coc-central
 
 set undofile
 
@@ -94,6 +95,10 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'mattn/emmet-vim'
 
+  Plug 'liuchengxu/vista.vim'
+  let g:vista_default_executive = 'coc'
+  let g:vista_fzf_preview = ['right:50%']
+
   Plug 'cespare/vim-toml'
 
   Plug 'scrooloose/nerdtree'
@@ -132,6 +137,7 @@ let g:coc_snippet_next = '<tab>'
 inoremap <silent><expr> <c-space> coc#refresh()
 
 nnoremap <SPACE> <Nop>
+nnoremap Q <Nop>
 
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gr <Plug>(coc-references)
@@ -154,6 +160,8 @@ nmap <leader>cc <plug>NERDCommenterToggle
 nnoremap <leader>cf zfa{
 nnoremap <silent> <leader>ct :call <SID>show_documentation()<CR>
 nnoremap <leader>cd :CocList diagnostics<CR>
+nnoremap <leader>cv :Vista!!<CR>
+nnoremap <leader>cs :Vista finder coc<CR>
 
 " k -> Split commands
 nmap <leader>kb :NERDTreeToggle<CR>
@@ -192,6 +200,7 @@ aug toggle_relative
   au InsertLeave,WinEnter * :setlocal relativenumber
 
   autocmd CursorHold * silent call CocActionAsync('highlight')
+  autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 aug END
 
 " Functions
@@ -201,6 +210,10 @@ function! s:show_documentation()
   else
     call CocAction('doHover')
   endif
+endfunction
+
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
 endfunction
 
 " Based on: https://github.com/justinmk/config/blob/master/.config/nvim/init.vim
