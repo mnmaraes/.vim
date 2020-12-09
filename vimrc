@@ -4,6 +4,9 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+let g:python_host_prog  = '/usr/local/bin/python'
+let g:python3_host_prog  = '/usr/local/bin/python3'
+
 set bs=2
 set sw=2
 
@@ -19,7 +22,7 @@ set nowritebackup
 
 set cmdheight=2
 
-set updatetime=300
+set updatetime=100
 set autoread
 
 set shortmess+=c
@@ -39,7 +42,7 @@ syntax on
 let mapleader=" "
 let g:markdown_folding = 1
 set runtimepath+=~/.vim/my-snippets/
-set runtimepath^=/Users/murillo/Projects/Personal/central-interfaces/coc-central
+" set runtimepath^=/Users/murillo/Projects/Personal/central-interfaces/coc-central
 
 set undofile
 
@@ -52,6 +55,17 @@ call plug#begin('~/.vim/plugged')
   Plug 'arzg/vim-colors-xcode'
   Plug 'ajh17/Spacegray.vim'
   let g:spacegray_low_contrast = 1
+
+  Plug 'stephenway/postcss.vim'
+  Plug 'habamax/vim-asciidoctor'
+  Plug 'uarun/vim-protobuf'
+  Plug 'wellle/targets.vim'
+
+  if has('nvim') || has('patch-8.0.902')
+    Plug 'mhinz/vim-signify'
+  else
+    Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+  endif
 
   Plug 'simeji/winresizer'
 
@@ -75,6 +89,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-unimpaired'
+  Plug 'tpope/vim-dispatch'
   Plug 'ap/vim-buftabline'
   Plug 'jiangmiao/auto-pairs'
 
@@ -107,6 +122,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
   let $FZF_DEFAULT_COMMAND = 'ag -g ""'
+
+  Plug 'rust-lang/rust.vim'
+  let g:rustfmt_autosave = 1
 
   Plug 'mileszs/ack.vim'
   if executable('ag')
@@ -162,6 +180,7 @@ nnoremap <silent> <leader>ct :call <SID>show_documentation()<CR>
 nnoremap <leader>cd :CocList diagnostics<CR>
 nnoremap <leader>cv :Vista!!<CR>
 nnoremap <leader>cs :Vista finder coc<CR>
+nnoremap <leader>cr :CocRestart<CR>
 
 " k -> Split commands
 nmap <leader>kb :NERDTreeToggle<CR>
