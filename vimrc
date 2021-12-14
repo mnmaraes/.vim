@@ -1,9 +1,3 @@
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 let g:python_host_prog  = '/usr/local/bin/python'
 let g:python3_host_prog  = '/usr/local/bin/python3'
 
@@ -42,7 +36,6 @@ syntax on
 let mapleader=" "
 let g:markdown_folding = 1
 set runtimepath+=~/.vim/my-snippets/
-" set runtimepath^=/Users/murillo/Projects/Personal/central-interfaces/coc-central
 
 set undofile
 
@@ -51,114 +44,44 @@ set clipboard=unnamed
 set directory=$HOME/.vim/swp//
 set undodir=$HOME/.vim/undodir
 
-call plug#begin('~/.vim/plugged')
-  Plug 'arzg/vim-colors-xcode'
-  Plug 'ajh17/Spacegray.vim'
-  let g:spacegray_low_contrast = 1
+let g:fzf_preview_window = ['right:50%', 'ctrl-/']
+let g:vista_fzf_preview = ['right:50%']
+let g:vista_default_executive = 'coc'
 
-  Plug 'stephenway/postcss.vim'
-  Plug 'habamax/vim-asciidoctor'
-  Plug 'uarun/vim-protobuf'
-  Plug 'wellle/targets.vim'
+" set fzf help
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
-  if has('nvim') || has('patch-8.0.902')
-    Plug 'mhinz/vim-signify'
-  else
-    Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
-  endif
+let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
-  Plug 'simeji/winresizer'
+" Completion setting
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <silent> <c-.> <Plug>(completion_trigger)
 
-  Plug 'mhinz/vim-startify'
-  let g:startify_session_autoload = 1
-  let g:startify_session_persistence = 1
-  let g:startify_change_to_dir = 0
+let g:completion_enable_snippet = 'UltiSnips'
 
-  Plug 'vim-perl/vim-perl', { 'for': 'perl', 'do': 'make clean carp dancer highlight-all-pragmas moose test-more try-tiny' }
-  Plug 'vim-airline/vim-airline'
-  let g:airline_powerline_fonts = 1
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
 
-  Plug 'reasonml-editor/vim-reason-plus'
-
-  Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-  Plug 'Quramy/tsuquyomi'
-  Plug 'leafgarland/typescript-vim'
-  Plug 'peitalin/vim-jsx-typescript'
-
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-fugitive'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-unimpaired'
-  Plug 'tpope/vim-dispatch'
-  Plug 'ap/vim-buftabline'
-  Plug 'jiangmiao/auto-pairs'
-
-  Plug 'tpope/vim-markdown'
-  let g:markdown_fenced_languages = ['javascript', 'js=javascript', 'json',  'jsx', 'reason']
-  Plug 'chmp/mdnav'
-
-  Plug 'scrooloose/nerdcommenter'
-  let g:NERDCreateDefaultMappings = 0
-
-  Plug 'othree/yajs.vim'
-  Plug 'mxw/vim-jsx'
-  Plug 'mhartington/oceanic-next'
-
-  Plug 'SirVer/ultisnips'
-  Plug 'honza/vim-snippets'
-  let g:UltiSnipsExpandTrigger=""
-
-  Plug 'mattn/emmet-vim'
-
-  Plug 'liuchengxu/vista.vim'
-  let g:vista_default_executive = 'coc'
-  let g:vista_fzf_preview = ['right:50%']
-
-  Plug 'cespare/vim-toml'
-
-  Plug 'scrooloose/nerdtree'
-  Plug 'Xuyuanp/nerdtree-git-plugin'
-
-  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-  Plug 'junegunn/fzf.vim'
-  let $FZF_DEFAULT_COMMAND = 'ag -g ""'
-
-  Plug 'rust-lang/rust.vim'
-  let g:rustfmt_autosave = 1
-
-  Plug 'mileszs/ack.vim'
-  if executable('ag')
-    let g:ackprg = 'ag --vimgrep'
-  endif
-
-  "Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-call plug#end()
+" Avoid showing message extra message when using completion
+set shortmess+=c
 
 " Abbreviations
 cabbr <expr> %% expand('%:p:h')
-
-" <TAB>: completion.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
 
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-let g:coc_snippet_next = '<tab>'
-
-inoremap <silent><expr> <c-space> coc#refresh()
-
 nnoremap <SPACE> <Nop>
 nnoremap Q <Nop>
 
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
+nmap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
 
 " Enhanced Movement
 nnoremap H 10h
@@ -175,18 +98,18 @@ nnoremap <Leader>ba :%bd<CR>
 
 " c -> Code/Comment commands
 nmap <leader>cc <plug>NERDCommenterToggle
+nmap <silent> <leader>cd <Plug>(jsdoc)
 nnoremap <leader>cf zfa{
-nnoremap <silent> <leader>ct :call <SID>show_documentation()<CR>
-nnoremap <leader>cd :CocList diagnostics<CR>
-nnoremap <leader>cv :Vista!!<CR>
-nnoremap <leader>cs :Vista finder coc<CR>
-nnoremap <leader>cr :CocRestart<CR>
+nnoremap <silent> <leader>c. <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> <leader>ct <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> <leader>cx <cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<CR>
 
 " k -> Split commands
 nmap <leader>kb :NERDTreeToggle<CR>
 nmap <leader>kv :vsp<CR>
 nmap <leader>kn :sp<CR>
 
+nnoremap <leader>kx <C-W><q>
 nnoremap <leader>kk <C-W><C-K>
 nnoremap <leader>kj <C-W><C-J>
 nnoremap <leader>kh <C-W><C-H>
@@ -212,28 +135,14 @@ nmap <leader>vl :setlocal rnu!<cr>
 nnoremap <leader>// /
 nnoremap <leader>/. :noh<cr>
 
+autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 1000)
+
 " Autocommands
 aug toggle_relative
   au! 
   au InsertEnter,WinLeave * :setlocal norelativenumber
   au InsertLeave,WinEnter * :setlocal relativenumber
-
-  autocmd CursorHold * silent call CocActionAsync('highlight')
-  autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 aug END
-
-" Functions
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
 
 " Based on: https://github.com/justinmk/config/blob/master/.config/nvim/init.vim
 function! s:zoom_toggle()
@@ -254,5 +163,10 @@ function! s:zoom_toggle()
 endfunction
 
 colorscheme spacegray
+
+hi LspDiagnosticsUnderlineError        	ctermbg=NONE   ctermfg=NONE     guibg=NONE  guifg=#CC6666  cterm=NONE      gui=underline
+hi LspDiagnosticsUnderlineWarning 	ctermbg=NONE   ctermfg=NONE     guibg=NONE  guifg=#B294BB  cterm=NONE      gui=underline
+hi LspDiagnosticsUnderlineHint        	ctermbg=NONE   ctermfg=NONE     guibg=NONE  guifg=#81A2BE  cterm=NONE      gui=underline
+hi LspDiagnosticsUnderlineInfo      	ctermbg=NONE   ctermfg=NONE     guibg=NONE  guifg=#8ABEB7  cterm=NONE      gui=underline
 
 set secure
